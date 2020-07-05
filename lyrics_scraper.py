@@ -17,7 +17,7 @@ def get_text_from_album_page(album_url):
     Returns
     -------
     list(str)
-        list of song lines
+        list of song lines.
         
     """
     album_page = requests.get(album_url)
@@ -36,7 +36,34 @@ def get_text_from_album_page(album_url):
                 song_lines.append(song_line)
 
 
+def get_album_page_urls(band_disco_url):
+    """Extract the urls for individual urls from a band's discography page.
+    
+    Parameters
+    ----------
+    band_disco_url: str
+        URL of the band discography page.
+    
+    Returns
+    -------
+    album_urls: list(str)
+        list of the band's album urls.
+    
+    """
+    PARENT_PAGE = 'http://www.darklyrics.com'
+    discog_page = requests.get(band_disco_url)
+    discog_soup = BeautifulSoup(discog_page.content, 'html.parser')
+    album_urls = []
+    for album in discog_soup.findAll('div', class_='album'):
+        album_url = album.find('a', href=True)['href']
+        # messy but necessary
+        album_url = album_url.replace('..', PARENT_PAGE)
+        album_urls.append(album_url)
+    return album_urls
 
 
 
-get_text_from_album_page('http://www.darklyrics.com/lyrics/opeth/orchid.html#1')
+
+
+#get_text_from_album_page('http://www.darklyrics.com/lyrics/opeth/orchid.html#1')
+print(get_album_page_urls('http://www.darklyrics.com/o/opeth.html'))
