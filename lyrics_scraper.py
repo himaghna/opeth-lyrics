@@ -2,6 +2,7 @@
    Scrape the lyrics for all Opeth songs from darklyrics.com.
 
 """
+from argparse import ArgumentParser
 
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
@@ -31,9 +32,10 @@ def get_text_from_album_page(album_url):
             continue
         next_2s = next_s.nextSibling
         if next_2s and isinstance(next_2s, Tag) and next_2s.name == 'br':
-            song_line = str(next_s).strip()
+            song_line = str(next_s).strip().lower()
             if song_line != '':
                 song_lines.append(song_line)
+    return song_lines
 
 
 def get_album_page_urls(band_disco_url):
@@ -62,8 +64,28 @@ def get_album_page_urls(band_disco_url):
     return album_urls
 
 
+if __name__== '__main__':
+    DISCO_LINKS = {'opeth': 'http://www.darklyrics.com/o/opeth.html'}
+    parser = ArgumentParser()
+    parser.add_argument('band',
+                        help="Band for which corpus is needed."
+                             "Currently implements 'opeth'")
+    parser.add_argument('-o', '--out_dir',
+                        help='File band_corpus.txt written to this directory')
+    args = parser.parse_args()
+    if args.band not in DISCO_LINKS.keys():
+        raise NotImplementedError(f'{args.band} not in implemented bands: '
+                                  f'{DISCO_LINKS.keys()}')
+    album_urls = get_album_page_urls(DISCO_LINKS[args.band])
+    text_corpus = [get_text_from_album_page(album_url)
+                   for album_url in album_urls][0]  # [[]] -> []
+    print(text_corpus)
+
+
+
+
 
 
 
 #get_text_from_album_page('http://www.darklyrics.com/lyrics/opeth/orchid.html#1')
-print(get_album_page_urls('http://www.darklyrics.com/o/opeth.html'))
+#print(get_album_page_urls('http://www.darklyrics.com/o/opeth.html'))
