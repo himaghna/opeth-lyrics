@@ -3,6 +3,8 @@
 
 """
 from argparse import ArgumentParser
+from os import getcwd, mkdir
+from os.path import isdir, join
 
 import requests
 from bs4 import BeautifulSoup, NavigableString, Tag
@@ -64,13 +66,15 @@ def get_album_page_urls(band_disco_url):
     return album_urls
 
 
-if __name__== '__main__':
-    DISCO_LINKS = {'opeth': 'http://www.darklyrics.com/o/opeth.html'}
+if __name__ == '__main__':
+    DISCO_LINKS = {'opeth': 'http://www.darklyrics.com/o/opeth.html',
+                   'porcupine_tree': 'http://www.darklyrics.com/p/porcupinetree.html'}
     parser = ArgumentParser()
     parser.add_argument('band',
                         help="Band for which corpus is needed."
-                             "Currently implements 'opeth'")
+                             "Currently implements 'opeth', 'porcupine_tree")
     parser.add_argument('-o', '--out_dir',
+                        required=False, default=None,
                         help='File band_corpus.txt written to this directory')
     args = parser.parse_args()
     if args.band not in DISCO_LINKS.keys():
@@ -79,7 +83,20 @@ if __name__== '__main__':
     album_urls = get_album_page_urls(DISCO_LINKS[args.band])
     text_corpus = [get_text_from_album_page(album_url)
                    for album_url in album_urls][0]  # [[]] -> []
-    print(text_corpus)
+    out_dir = args.out_dir
+    if out_dir in [None, '.']:
+        out_dir = getcwd()
+    if not isdir(out_dir):
+        print(f'Creating {out_dir}')
+        mkdir(out_dir)        
+    out_fpath = join(out_dir, f'lyrics_{args.band}.txt')
+    print(f'Saving lyrics to file {out_fpath}')
+    with open(out_fpath, "w", encoding="utf-8") as fp:
+        for text_line in text_corpus:     
+            fp.write('\n' + text_line)
+    
+    
+
 
 
 
