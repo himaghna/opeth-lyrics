@@ -3,6 +3,7 @@
 
 """
 from argparse import ArgumentParser
+from itertools import chain 
 from os import getcwd, mkdir
 from os.path import isdir, join
 
@@ -81,8 +82,10 @@ if __name__ == '__main__':
         raise NotImplementedError(f'{args.band} not in implemented bands: '
                                   f'{DISCO_LINKS.keys()}')
     album_urls = get_album_page_urls(DISCO_LINKS[args.band])
-    text_corpus = [get_text_from_album_page(album_url)
-                   for album_url in album_urls][0]  # [[]] -> []
+    album_lyrics = [get_text_from_album_page(album_url)
+                   for album_url in album_urls]
+    # flatten to 1D list
+    text_corpus = list(chain.from_iterable(album_lyrics)) 
     out_dir = args.out_dir
     if out_dir in [None, '.']:
         out_dir = getcwd()
