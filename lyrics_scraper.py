@@ -70,12 +70,13 @@ def get_album_page_urls(band_disco_url):
 if __name__ == '__main__':
     DISCO_LINKS = {'opeth': 'http://www.darklyrics.com/o/opeth.html',
                    'porcupine_tree': 'http://www.darklyrics.com/p/porcupinetree.html',
-                   'megadeth': 'http://www.darklyrics.com/m/megadeth.html'}
+                   'megadeth': 'http://www.darklyrics.com/m/megadeth.html',
+                   'metallica': 'http://www.darklyrics.com/m/metallica.html'}
     parser = ArgumentParser()
     parser.add_argument('band',
                         help="Band for which corpus is needed."
                              "Currently implements 'opeth', 'porcupine_tree',"
-                             "'megadeth'")
+                             "'megadeth', 'metallica'")
     parser.add_argument('-o', '--out_dir',
                         required=False, default=None,
                         help='File band_corpus.txt written to this directory')
